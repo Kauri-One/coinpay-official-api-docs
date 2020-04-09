@@ -31,6 +31,7 @@
     - [Повторение заявки на вывод](#повторение-заявки-на-вывод)
     - [Специфические параметры заявки на вывод](#специфические-параметры-заявки-на-вывод)
     - [Получение деталей по заявке на вывод](#получение-деталей-по-заявке-на-вывод)
+    - [Детали заявки на вывод при callback нотификации](#детали-заявки-на-вывод-при-callback-нотификации)
   
 
 
@@ -797,5 +798,24 @@ withdrawal_order_processing_rules": {
       ],
       "currency": "UAH"
     },
+```
+
+### Детали заявки на вывод при callback нотификации
+```javascript
+{"withdrawal_transactions": [0.03562889], 
+"comment": "some_comment", 
+"order_type": "WITHDRAWAL", 
+"currency": "BTC", 
+"dt": "2020-04-09 16:14:12.076628", 
+"status": "CLOSED", 
+"order_sub_type": "GATEWAY", 
+"amount_to_withdrawal": 0.03562889, 
+"details": {"tr_id": "2a834817d524f8dde54fb9c4e1d5d3ba4839bc81495ed5d1e2bebb1ebeffc23d", 
+            "comment": "some_comment", 
+	    "tr_hash": "https://www.blockchain.com/btc/tx/2a834817d524f8dde54fb9c4e1d5d3ba4839bc81495ed5d1e2bebb1ebeffc23d",             "fee": 0.0002, 
+	    "address": "14ckdLFzj3ba4FSQiW1fSGKURycqc5gNQE"
+	    }, 
+"amount": 0.03582889, 
+"external_id": "02241379-109d-4c49-965d-6eea8de164c7"}
 ```
 
