@@ -311,4 +311,22 @@ POST "api/v1/user/obtain_token"
 
 
 ## Получение настроек по аккаунту
+```javascript
+  GET "api/v1/user/account_info"
+```
+
+```javascript
+  {
+  "name": "Свят",
+  "email": "svyatoslavkravchenko@gmail.com",
+  "account_type": "VERIFIED",
+  "is_email_verified": true,
+  "referral_id": "89f67887-cae6-4a6f-a393-a89079878a57",
+  "created": "2019-02-05T08:13:48.952334",
+  "is_2fa_enabled": false,
+  //limits, fee, processing_rules
+  }
+```
+
+В ответе приходит имя пользователя, его емейл, тип аккаунта, верифицирована ли почта, включена ли двух-факторная авторизация, также по каждому виду заявок приходят лимиты, фии, и т.д. По каждой заявке будет отдельно рассматриваться
 
