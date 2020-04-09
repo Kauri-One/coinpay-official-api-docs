@@ -776,6 +776,7 @@ withdrawal_order_processing_rules": {
 2. `amount_to_withdrawal - фактическая сумма вывода`
 3. `withdrawal_transactions - список успешных транзакций`
 4. `address - адрес вывода. В рамках фиатной валюты пишуться последние 4 цифры`
+5. `dt - дата закрытия заявки`
 
 ### Получение деталей по заявке на вывод
 ```javascript
