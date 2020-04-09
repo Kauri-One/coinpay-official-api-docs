@@ -408,11 +408,56 @@ GET "api/v1/user/account_info"
 
 Есть три вида настроек - "fees", "limits", "processing_rules"
 
+#### Лимиты
+
+```javascript
+"deposit_order_limits": {
+    "UAH": {
+      "GATEWAY": {
+        "P2P": {
+          "max_amount": 14000,
+          "min_amount": 10
+        }
+      }
+    }
+  }
+ ``` 
+На данный момент есть лимиты на пополнения есть только для фиатных валют, указываеться лимит за операцию. В данном примере показываються лимит на пополнение "UAH", по типу пополнения - "P2P".
 
 
+#### Fee
 
+```javascript
+"deposit_order_fees": {
+	"BTC": {
+          "GATEWAY": {
+            "P2P": {
+             "payment_provider_static_fee": null,
+             "static_fee": 0,
+             "percent_fee": null
+        }
+      }
+    },
+}													
+```
+Показывает какие есть фии по конкретной валюте на пополнение.
 
+    static_fee - показывает статическое значение, которое берёться в рамках депозита
+    percent_fee - показывает значение, которое берёться в рамках депозита в процентном соотношении
+    payment_provider_static_fee - стоимость работы провайдера на пополнение, обычно указываеться с каким-то значением(static_fee, или percent_fee)
+    
+#### Processing rules
 
-
-
-
+```javascript
+"deposit_order_processing_rules": {
+	"BTC": {
+          "GATEWAY": {
+            "P2P": {
+              "is_deposit_enabled": true,
+              "confirmations_count": 2
+        }
+      }
+    },
+}													
+```
+Показывает, включен ли депозит, возможно ли повторения депозита, включена ли отмена депозита. "confirmations_count" - для фиатных валют не имеет значения, для крипто-валюты показывает по скольким подтверждениям идет зачисления депозита.
