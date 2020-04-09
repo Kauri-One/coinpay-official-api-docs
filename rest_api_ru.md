@@ -26,6 +26,7 @@
   - [Заявка на вывод](#заявка-на-вывод)
     - [Схема работы заявки на вывод](#схема-работы-заявки-на-вывод)
     - [Получение настроек по заявке на вывод](#получение-настроек-по-заявке-на-вывод)
+    - [Создание заявки на вывод](#создание-заявки-на-вывод)
   
 
 
@@ -660,3 +661,66 @@ withdrawal_order_processing_rules": {
 }
 ```
 В данном случае показаны лимиты за операцию
+
+
+### Создание заявки на вывод
+
+```git
+ POST "api/v1/withdrawal"
+```
+
+###### Параметры:
+
+```javascript
+{
+	"currency": "string",
+	"withdrawal_type": "string",
+	"comment": "string",
+	"mode": "string",
+	"callback_url": "string",
+	"additional_info": {},
+	"amount": 0,
+	"wallet_to": "string"
+}
+```
+
+**Анализ параметров:**
+
+ - `currency - валюта, обязательный параметр`
+ - `withdrawal_type - тип вывода, обязательный параметр. Для вывода на карты или на крипто-валютные адреса, нужно указывать - "GATEWAY"`
+ - `comment - комментарий к выводу, не обязательный параметр`
+ - `callback_url - url, для нотификации, не обязательный параметр. Если он указан, то будут приходить нотификации с обновлением статусов по конкретной заявке`  
+ - `amount - сумма для вывода, обязательный параметр`  
+ - `wallet_to - адрес кошелька, обязательный параметр`
+ - `additional_info - словарь, с доп.параметрами. client_ip - не обязательный параметр, withdrawal_email нужно указывать если у вас статус аккаунта - "BUSINESS"`
+
+**Примеры:**
+
+###### Создания заявки для вывода(UAH):
+
+```javascript
+{
+   "currency": "UAH",
+   "withdrawal_type": "GATEWAY",
+   "comment": "comment",
+   "callback_url": "http://",
+   "additional_info": {"withdrawal_email": $customer_email},
+   "amount": 100,
+   "wallet_to": $card_number
+}
+```
+
+###### Создания заявки для вывода(крипто-валюта):
+
+```javascript
+{
+   "currency": "BTC",
+   "withdrawal_type": "GATEWAY",
+   "comment": "comment",
+   "callback_url": "http://",
+   "amount": 100,
+   "wallet_to": $btc_addr
+}
+```
+
+В ответ на создания заявки, апи отдает order_id - ID заявки.
