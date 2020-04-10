@@ -887,8 +887,6 @@ withdrawal_order_processing_rules": {
 
 ### Создание заявки на внутренний перевод
 
-### Создание заявки на вывод
-
 ```javascript
  POST "api/v1/internal_movement"
 ```
