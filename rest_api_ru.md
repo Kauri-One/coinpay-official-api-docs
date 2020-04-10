@@ -1097,7 +1097,6 @@ GET api/v1/user/account_info
        "comment": "Bot_operation_100_UAH", 
        "source_account": <some_account>}, 
  "external_id": "3542e3c2-4bab-48b8-bfbb-2b95b88c8a7a"}
- ```
 ```
 
   
