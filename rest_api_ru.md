@@ -52,6 +52,7 @@
     - [Отмена лимитного обмена](#отмена-лимитного-обмена)
     - [Повтор лимитного обмена](#повтор-лимитного-обмена)
     - [Получение деталей](#получение-деталей-по-обменной-заявке)
+    - [Детали заявки при callback нотификации](#детали-заявки-по-обмену-при-callback-нотификации)
   
 
 
@@ -1256,6 +1257,23 @@ POST /api/v1/exchange/repeat
       "order_type": "EXCHANGE",
       "currency": "UAH_USD"
     },
+```
+
+### Детали заявки по обмену при callback нотификации
+
+```javascript
+{"external_id": "ddd08d0a-198f-441e-bf45-a61fc889261f", 
+"status": "CLOSED", 
+"order_type": "EXCHANGE", 
+"order_sub_type": "MARKET_EXCHANGE", 
+"dt": "2020-04-09 14:05:19.373028", 
+"currency": 
+"RUB_USDT", 
+"details": {"currency_to_get_amount": 40337.397594, 
+            "price": 75.28443, 
+	    "currency_to_spend_amount": 535.8}
+	    }
+}
 ```
 
 
