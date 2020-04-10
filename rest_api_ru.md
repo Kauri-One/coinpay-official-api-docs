@@ -839,7 +839,7 @@ withdrawal_order_processing_rules": {
  GET "api/v1/user/account_info"
 ```
 
-##### Позволяет получить, значения лимитов, фии, включен ли вывод:
+##### Позволяет получить, значения лимитов, фии, включено ли перемещение средств:
 
 ```javascript
 internal_movement_processing_rules": {
