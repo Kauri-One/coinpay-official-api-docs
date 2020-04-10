@@ -47,6 +47,7 @@
     - [Детали заявки при callback нотификации](#детали-заявки-на-создание-счёта-при-callback-нотификации)
   - [Заявка на обмен](#заявка-на-обмен)
     - [Разновидности обменов](#разновидности-обменов)
+    - [Получение настроек](#получение-настроек-по-заявке-на-обмен)
   
 
 
@@ -1119,6 +1120,44 @@ GET api/v1/user/account_info
 3) "ERROR" - возникла ошибка при обмене
 4) "CANCELLING" - обмен был отправлен на отмену
 5) "CANCELLED" - обмен отменен
+
+
+### Получение настроек по заявке на обмен
+
+```javascript
+GET api/v1/user/account_info
+```
+
+#### Получение настроек по доступности обменных операций
+```javascript
+"exchange_order_processing_rules": {
+    "EUR_USD": {
+      "is_market_exchange_enabled": true,
+      "is_cancel_enabled_for_limit_exchange": false,
+      "is_repeat_enabled_for_limit_exchange": false,
+      "is_limit_exchange_enabled": true
+    },
+```
+is_market_exchange_enabled - показывает, включен ли обмен по рынку
+is_limit_exchange_enabled - показывает, включен ли обмен с заказом цены
+is_cancel_enabled_for_limit_exchange - включена ли отмена для лимитного обмена
+is_repeat_enabled_for_limit_exchange - вклчено ли повторение для лимитного обмена
+
+#### Получение настроек по лимитам на обменную операцию
+```javascript
+"exchange_order_limits": {
+    "EUR_USD": {
+      "max_amount": 10000,
+      "currency_to_spend": "USD",
+      "min_amount": 5
+    },
+```
+Лимиты на каждую пару сформированны таким образом, что проверяеться сколько тратиться той или иной валюты в рамках обмена.
+В текущем примере, можно потратить от 5 до 10000 USD при покупке евро
+
+
+
+
 
 
   
