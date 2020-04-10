@@ -1138,10 +1138,13 @@ GET api/v1/user/account_info
       "is_limit_exchange_enabled": true
     },
 ```
-is_market_exchange_enabled - показывает, включен ли обмен по рынку
-is_limit_exchange_enabled - показывает, включен ли обмен с заказом цены
-is_cancel_enabled_for_limit_exchange - включена ли отмена для лимитного обмена
-is_repeat_enabled_for_limit_exchange - вклчено ли повторение для лимитного обмена
+"is_market_exchange_enabled" - показывает, включен ли обмен по рынку
+
+"is_limit_exchange_enabled" - показывает, включен ли обмен с заказом цены
+
+"is_cancel_enabled_for_limit_exchange" - включена ли отмена для лимитного обмена
+
+"is_repeat_enabled_for_limit_exchange" - вклчено ли повторение для лимитного обмена
 
 #### Получение настроек по лимитам на обменную операцию
 ```javascript
