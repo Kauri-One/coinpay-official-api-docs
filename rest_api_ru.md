@@ -846,7 +846,7 @@ withdrawal_order_processing_rules": {
 ##### Позволяет получить, значения лимитов, фии, включено ли перемещение средств:
 
 ```javascript
-internal_movement_processing_rules": {
+"internal_movement_processing_rules": {
     "UAH": {
       "is_repeat_enabled": true,
       "is_enabled": true
