@@ -45,6 +45,14 @@
     - [Creating invoice](#creating-invoice)
     - [Getting details](#getting-invoice-details)
     - [Order details for callback notification](#order-for-invoice-order-details-for-callback-notification)
+  - [Exchange order](#exchange-order)
+    - [Exchange types](#exchange-types)
+    - [Getting settings](#getting-exchange-order-settings)
+    - [Creating exchange](#creating-exchange)
+    - [Cancelling limit exchange](#cancelling-limit-exchange)
+    - [Repeating limit exchange](#repeating-limit-exchange)
+    - [Getting details](#getting-exchange-order-details)
+    - [Order details for callback notification](#exchange-order-details-for-callback-notification)
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
@@ -1117,4 +1125,183 @@ Invoice details can be seen by the account that created such invoice, and by the
        "comment": "Bot_operation_100_UAH", 
        "source_account": <some_account>}, 
  "external_id": "3542e3c2-4bab-48b8-bfbb-2b95b88c8a7a"}
+```
+
+## Exchange order
+### Exchange types
+The platform allows you to make two different types of exchange:
+
+1) Market exchange (order subtype – ‘MARKET_EXCHANGE’)
+2) Exchange upon reaching the indicated price - (order subtype – ‘LIMIT_EXCHANGE’)
+
+Market exchange has the following statuses:
+1) ‘NEW’ – order is created
+2) ‘CLOSED’ - exchange is successful
+3) ‘ERROR’ – exchange resulted in an error
+
+Limit exchange has the following statuses:
+1) ‘NEW’, ‘WAITING_FOR_PRICE’ - waiting for the price on the platform
+2) ‘CLOSED’ - exchange successfully completed
+3) ‘ERROR’ – exchange resulted in an error
+4) ‘CANCELLING’ – exchange is being canceled
+5) ‘CANCELLED’ - exchange is canceled
+
+
+### Getting exchange order settings
+
+```javascript
+GET api/v1/user/account_info
+```
+
+#### Getting settings for exchange transactions availability 
+
+```javascript
+"exchange_order_processing_rules": {
+    "EUR_USD": {
+      "is_market_exchange_enabled": true,
+      "is_cancel_enabled_for_limit_exchange": false,
+      "is_repeat_enabled_for_limit_exchange": false,
+      "is_limit_exchange_enabled": true
+    },
+```
+
+‘is_market_exchange_enabled’ - indicates whether market exchange is enabled
+
+‘is_limit_exchange_enabled’ - indicates whether limit exchange is enabled
+
+‘is_cancel_enabled_for_limit_exchange’ – indicates whether cancellation is enabled for limit exchange
+
+‘is_repeat_enabled_for_limit_exchange’ – indicates whether repetition is enabled for limit exchange
+
+#### Getting settings for exchange order limits
+
+```javascript
+"exchange_order_limits": {
+    "EUR_USD": {
+      "max_amount": 10000,
+      "currency_to_spend": "USD",
+      "min_amount": 5
+    },
+```
+
+The limits for each pair are formed in the way that allows checking amounts of particular currency spent during exchange.
+In the current example, you can spend 5 to 10.000 USD when buying euros.
+
+
+### Creating exchange
+
+```javascript
+POST /api/v1/exchange
+```
+
+#### Parameters
+```javascript
+{
+  "currency_to_spend": "string",
+  "currency_to_get": "string",
+  "currency_to_spend_amount": "string",
+  "callback_url": "string",
+  "currency_to_get_amount": "string",
+  "exchange_price": "string"
+}
+```
+
+#### Exchange creation rules
+1) It is necessary to indicate the currency that is spent and the currency that is bought
+2) You need to specify one of the amounts or make an exchange spending X currency, or make a purchase to get Y currency
+3) If you want to purchase at the ordered price, you need to specify the following parameter value – ‘exchange_price’
+4) You can specify callback_url to subscribe to notifications on changes in exchange status
+
+#### Examples
+
+1) Purchasing 1 BTC for UAH at the market price
+```javascript
+{
+  "currency_to_spend": "UAH",
+  "currency_to_get": "BTC",
+  "currency_to_get_amount": "1"
+}
+```
+
+2) Purchasing 1 BTC for UAH at the market price spending 1000 UAH on exchange
+```javascript
+{
+  "currency_to_spend": "UAH",
+  "currency_to_get": "BTC",
+  "currency_to_spend_amount": "10000"
+}
+```
+
+3) Purchasing 1 BTC for UAH at the price of 200.000
+```javascript
+{
+  "currency_to_spend": "UAH",
+  "currency_to_get": "BTC",
+  "currency_to_get_amount": "1",
+  "exchange_price": "200000"
+}
+```
+
+### Cancelling limit exchange
+```javascript
+POST api/v1/exchange/cancel
+```
+
+#### Parameters
+```javascript
+{
+  "order_id": "string"
+}
+```
+
+Only a limit exchange order can be canceled if cancellation is enabled and the order is being processed.
+
+### Repeating limit exchange
+
+```javascript
+POST /api/v1/exchange/repeat
+```
+#### Parameters
+```javascript
+{
+  "order_id": "string"
+}
+```
+
+Repeating the order is possible if repetition is enabled and the order is completed.
+
+
+### Getting exchange order details
+
+```javascript
+{
+      "details": {
+        "currency_to_spend_amount": 92.42144177,
+        "currency_to_get_amount": 2499.99999988,
+        "price": 27.05
+      },
+      "order_sub_type": "MARKET_EXCHANGE",
+      "dt": "2020-04-10 11:19:40.596357",
+      "status": "CLOSED",
+      "external_id": "d0a9823a-90e4-40af-9739-a380bdc13932",
+      "order_type": "EXCHANGE",
+      "currency": "UAH_USD"
+    },
+```
+
+### Exchange order details for callback notification
+
+```javascript
+{"external_id": "ddd08d0a-198f-441e-bf45-a61fc889261f", 
+"status": "CLOSED", 
+"order_type": "EXCHANGE", 
+"order_sub_type": "MARKET_EXCHANGE", 
+"dt": "2020-04-09 14:05:19.373028", 
+"currency": 
+"RUB_USDT", 
+"details": {"currency_to_get_amount": 40337.397594, 
+            "price": 75.28443, 
+	    "currency_to_spend_amount": 535.8}
+	    }
+}
 ```
