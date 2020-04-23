@@ -1041,7 +1041,7 @@ Indicates the amount of fees and how such fees will be calculated for each invoi
 
 Indicates the amount and limits for invoice issuance.
 
-### Invoice creation
+### Creating invoice
  ```javascript
  POST api/v1/invoice
  ```
