@@ -486,10 +486,15 @@ POST "api/v1/deposit/address"
 ** Parameters description: **
 
 1. `currency - currency, must be indicated (mandatory)`
+
 2. `callback_url - url for notifications when creating a deposit order (optional)`
+
 3. `amount_to_spend, amount_to_receive - you need to specify one of these parameters. In the first case, the system will create a link for replenishment taking into account the amount a client can spend, and in the second case, the balance will be replenished by this amount (amount_to_receive). These fields are mandatory only for fiat currencies replenishment`
+
 4. `comment - a comment that will be indicated when creating an order at a specific address and received in callback - (optional parameter)`
+
 5. `payment_type - replenishment method; if it is not specified, P2P will be taken by default`
+
 6. `additional_info - a dictionary with additional parameters. customer_id is an optional parameter, client_ip is a required parameter, deposit_email or deposit_phone must be specified if one`s account status is ‘BUSINESS’
 
 ###### Example of obtaining a deposit address for cryptocurrency:
