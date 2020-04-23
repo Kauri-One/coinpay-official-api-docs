@@ -878,7 +878,8 @@ Fees are paid by the remitter.
 The following options are possible:
 
   - `static_fee - a static value is paid when transferring funds`
-  - `percent_fee – percentage-based amount is paid`
+  
+  - `percent_fee – percentage-based amount is paid`
 
 ```javascript
 "internal_movement_limits": {
