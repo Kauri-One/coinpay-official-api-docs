@@ -686,11 +686,17 @@ In this case, the limits for the operation are shown.
 ** Parameter analysis: **
 
  - `currency - currency, required parameter`
+ 
  - `withdrawal_type - withdrawal type, required parameter. ‘GATEWAY’ should be indicated when withdrawing to cards or cryptocurrency addresses`
+ 
  - `comment - a comment to withdrawal, optional parameter`
+ 
  - `callback_url - url for notifications, optional parameter. If it is indicated, notifications with status updates on a specific order will be received`
+ 
  - `amount – withdrawal amount, required parameter`
+ 
  - `wallet_to - wallet address, required parameter`
+ 
  - `additional_info - dictionary with additional parameters. client_ip - optional, withdrawal_email must be specified if one`s account status is ‘BUSINESS’
 
 
