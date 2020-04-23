@@ -32,6 +32,13 @@
     - [Specific parameters](#withdrawal-order-specific-parameters)
     - [Getting details](#getting-withdrawal-order-details)
     - [Order details for callback notification](#withdrawal-order-details-for-callback-notification) 
+  - [Internal movement order](#internal-movement-order)
+    - [Operation scheme](#internal-movement-order-operation-scheme)  
+    - [Getting settings](#getting-internal-movement-order-settings)
+    - [Creating order](#creating-internal-movement-order)
+    - [Repeating order](#repeating-internal-movement-order)
+    - [Getting order details](#getting-internal-movement-order-details)
+    - [Order details for callback notification](#internal-movement-order-details-for-callback-notification)
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
