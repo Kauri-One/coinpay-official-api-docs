@@ -238,6 +238,7 @@ In this case, you should get a dictionary, but with sorted keys:
 }
 
 The keys of the received dictionary should be sorted in alphabetical order.
+
 ** Step 2: ** A line for signature is created in this format:
 ```javascript
 {request.method} - {request.path} - {sorted_params}
