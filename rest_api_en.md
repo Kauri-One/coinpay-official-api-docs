@@ -592,3 +592,226 @@ POST "api/v1/deposit/address"
   "tr_hash": "e89ce23c-4d5b-4124-897a-84e75ea972c9"
 }
 ```
+
+## Withdrawal order
+### Withdrawal order operation scheme
+
+Upon successful creation of a withdrawal order, such order automatically switches to the status ‘NEW’.
+
+Upon successful withdrawal, the order`s status changes to ‘CLOSED’. This is the final status, which means success.
+
+In case of withdrawal error, the order`s status changes to ‘ERROR’.
+
+It is possible to cancel the order if withdrawal transaction/transactions have not been completed in full.
+
+Upon successful acceptance of a cancellation request, the status of the order changes to ‘CANCELLING’ and ‘CANCELLED’ when finally cancelled.
+
+When withdrawing fiat, the withdrawal amount can be divided into several transactions, and there may be situations when some of the transactions are successful and some are not. In this case, two orders are created, one with ‘CLOSED’ status showing the amount of funds that was successfully withdrawn, and the second order with ‘ERROR’ status showing the amount of funds that has not been withdrawn.
+
+### Getting withdrawal order settings
+
+```git
+ GET "api/v1/user/account_info"
+```
+
+###### Allows you to get to know the values of limits, fees, and whether withdrawal is enabled:
+
+```javascript
+withdrawal_order_processing_rules": {
+	"USDT": {
+		  "GATEWAY": {
+		    "is_cancel_enabled": true,
+		    "is_repeat_enabled": true,
+		    "is_withdrawal_enabled": true
+		   }
+	},
+	...
+}
+```
+
+Indicates whether withdrawal is enabled, whether withdrawal cancellation is enabled, whether withdrawal repeat is enabled
+
+```javascript
+"withdrawal_order_fees": {
+	"UAH": {
+		"GATEWAY": {
+		   "parent_currency_static_fee": null,
+		   "static_fee": null,
+		   "percent_fee": 0.5
+		},
+	},
+	...
+}
+```
+
+Indicates the set fees.
+
+The following options are possible:
+
+```javascript
+"withdrawal_order_limits": {
+	"USDT": {
+		"GATEWAY": {
+		    "min_amount": 10,
+		    "max_amount": 10000
+		}
+	}, 
+	...
+}
+```
+
+In this case, the limits for the operation are shown.
+
+
+### Creating withdrawal order
+
+```git
+ POST "api/v1/withdrawal"
+```
+
+###### Parameters:
+```javascript
+{
+	"currency": "string",
+	"withdrawal_type": "string",
+	"comment": "string",
+	"mode": "string",
+	"callback_url": "string",
+	"additional_info": {},
+	"amount": 0,
+	"wallet_to": "string"
+}
+```
+
+** Parameter analysis: **
+
+ - `currency - currency, required parameter`
+ - `withdrawal_type - withdrawal type, required parameter. ‘GATEWAY’ should be indicated when withdrawing to cards or cryptocurrency addresses`
+ - `comment - a comment to withdrawal, optional parameter`
+ - `callback_url - url for notifications, optional parameter. If it is indicated, notifications with status updates on a specific order will be received`
+ - `amount – withdrawal amount, required parameter`
+ - `wallet_to - wallet address, required parameter`
+ - `additional_info - dictionary with additional parameters. client_ip - optional, withdrawal_email must be specified if one`s account status is ‘BUSINESS’
+
+
+** Examples: **
+
+###### Creating withdrawal order (UAH):
+
+```javascript
+{
+   "currency": "UAH",
+   "withdrawal_type": "GATEWAY",
+   "comment": "comment",
+   "callback_url": "http://",
+   "additional_info": {"withdrawal_email": $customer_email},
+   "amount": 100,
+   "wallet_to": $card_number
+}
+```
+
+###### Creating withdrawal order (cryptocurrency):
+
+```javascript
+{
+   "currency": "BTC",
+   "withdrawal_type": "GATEWAY",
+   "comment": "comment",
+   "callback_url": "http://",
+   "amount": 100,
+   "wallet_to": $btc_addr
+}
+```
+
+In response to creating an order, API returns order_id, ID of the order.
+
+### Cancelling withdrawal order
+
+A withdrawal order can be canceled if cancellation is allowed and the relevant order is being processed.
+If withdrawal has already been completed (transaction has already been sent), such transaction cannot be canceled. You will have time to cancel before the actual withdrawal.
+
+###### URI
+
+```javascript
+ POST "api/v1/withdrawal/cancel"
+```
+
+###### Parameters:
+
+```javascript
+{
+  "order_id": "string"
+}
+```
+
+If withdrawal cancellation has been successful, the system will return the 200th response, otherwise there will be an error.
+
+### Repeating withdrawal order
+
+It is possible to repeat a withdrawal order if repetition is enabled and such order has been processed.
+
+```javascript
+ POST " /api/v1/withdrawal/repeat            "
+```
+
+###### Parameters:
+
+```javascript
+{
+  "amount": 0,
+  "order_id": "string"
+}
+```
+
+It is required to specify order_id. You can specify the amount; it will change the amount for withdrawal as part of a new order.
+
+### Withdrawal order specific parameters
+
+1. `amount - the amount of funds that has been withdrawn from the user's balance`
+2. `amount_to_withdrawal - the actual withdrawal amount`
+3. `withdrawal_transactions - list of successful transactions`
+4. `address - withdrawal address. With fiat currency, the last 4 digits are indicated`
+5. `dt - closing date for an order`
+
+### Getting withdrawal order details
+```javascript
+{
+      "details": {
+        "comment": "",
+        "address": "0997",
+        "fee": 2.9
+      },
+      "amount": 582.9,
+      "order_sub_type": "GATEWAY",
+      "dt": "2020-04-09 13:43:47.531414",
+      "comment": "",
+      "status": "CLOSED",
+      "external_id": "0bf77841-fe66-4a50-aa6a-129cde64c9aa",
+      "amount_to_withdrawal": 580,
+      "order_type": "WITHDRAWAL",
+      "withdrawal_transactions": [
+        580
+      ],
+      "currency": "UAH"
+    },
+```
+
+### Withdrawal order details for callback notification
+
+```javascript
+{"withdrawal_transactions": [0.03562889], 
+"comment": "some_comment", 
+"order_type": "WITHDRAWAL", 
+"currency": "BTC", 
+"dt": "2020-04-09 16:14:12.076628", 
+"status": "CLOSED", 
+"order_sub_type": "GATEWAY", 
+"amount_to_withdrawal": 0.03562889, 
+"details": {"tr_id": "2a834817d524f8dde54fb9c4e1d5d3ba4839bc81495ed5d1e2bebb1ebeffc23d", 
+            "comment": "some_comment", 
+	    "tr_hash": "https://www.blockchain.com/btc/tx/2a834817d524f8dde54fb9c4e1d5d3ba4839bc81495ed5d1e2bebb1ebeffc23d",             "fee": 0.0002, 
+	    "address": "14ckdLFzj3ba4FSQiW1fSGKURycqc5gNQE"
+	    }, 
+"amount": 0.03582889, 
+"external_id": "02241379-109d-4c49-965d-6eea8de164c7"}
+```
