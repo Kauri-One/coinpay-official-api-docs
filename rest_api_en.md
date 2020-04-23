@@ -12,6 +12,10 @@
   - [Authorization by request signature](#authorization-by-request-signature)
   - [Getting balance](#getting-balance)
   - [Retrieving account settings](#retrieving-account-settings)
+- [Orders](#orders)
+  - [Getting order details](#getting-order-details)
+  - [Getting order history](#getting-order-history)
+  - [Callback notification](#callback-notification)
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
@@ -328,3 +332,49 @@ The balance contains crypto addresses that can be replenished; the addresses are
 ```
 
 A response includes a username, email address, type of account, information on whether such mail has been verified, whether two-factor authorization is enabled, as well as limits, personal funds, etc. for each order type. Each order will be considered separately
+
+# Orders
+## Getting order details
+When creating an order through API, the system gives the order_id of such order, thus giving the opportunity to get the details.
+```javascript
+GET "api/v1/orders/detail"
+```
+###### Параметры:
+
+```javascript
+{
+  "order_id": $order_id
+}						
+```
+
+The response provides order details such as whether the order has been created by a specific account or the account has participated in this order. There are orders in which several accounts participate.
+The chapter provides an example of what exactly each order returns, for each order type.
+## Getting order history
+```javascript
+GET "api/v1/orders/history"
+```
+###### Sample response:
+
+```javascript
+{
+  "orders": [<orders_details_list>]
+  "status": "success",
+  "pages_count": 78
+}
+```
+
+Order history has paging with 10 orders displayed on a page.
+
+###### Filters:
+  - order_type - the type of an order. Possible values are ‘DEPOSIT’, ‘WITHDRAWAL’, ‘EXCHANGE’, ‘INTERNAL_MOVEMENT’, ‘INVOICE’.
+
+- order_status - the status of an order. Possible values are ‘NEW’, ‘ERROR’, ‘CLOSED’, ‘EXPIRED’, ‘CANCELLED’, ‘CANCELLING’, ‘WAITING_FOR_OPERATOR_CONFIRMATION’, ‘CONFIRMED_BY_OPERATOR’, ‘CANCELLED_BY_OPERATOR’, ‘WAITING_FOR_CONFIRMATION’, ‘WAITING_FOR_PRICE’, ‘PAYMENT_IN_PROGRESS’.
+- order_sub_type - the subtype of an order. Some orders have their own subtypes that can be used to filter them.
+- page - the page for withdrawal.
+- from_timestamp, till_timestamp - filtering by time of order creation.
+- currency - filtering by currency. It displays all orders for a particular currency.
+- address finds all orders with an address. They can be either replenishment or withdrawal orders.
+
+### Callback notification
+When creating an order, it is possible to specify the url for notification when the status of such order changes.
+With callback notification, a POST request is sent to the specified address. The 200th response will be a successful request processing, and if an error occurs, the system will try to send a callback 3 times with an interval of 5 minutes.
