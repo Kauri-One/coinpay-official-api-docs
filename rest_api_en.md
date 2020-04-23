@@ -4,6 +4,14 @@
 - [Getting active pairs list](#getting-active-pairs-list)
 - [Getting prices](#getting-prices)
 - [Calculating exchange cost](#calculating-exchange-cost)
+- [User data](#user-data)
+ - [Creating account](#creating-account)
+ - [Account types](#account-types)
+ - [Authorization types](#authorization-types)
+ - [JWT authorization](#jwt-authorization)
+ - [Authorization by request signature](#authorization-by-request-signature)
+ - [Getting balance](#getting-balance)
+ - [Retrieving account settings](#retrieving-account-settings)
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
