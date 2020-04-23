@@ -911,12 +911,11 @@ In this case, the limits for the operation are shown. The amount of the transfer
 ```
 
 ** Parameter analysis: **
-
-  - `currency - currency, required parameter`
-  - `comment – a comment to withdrawal, optional parameter`
-  - `callback_url - url for notifications, optional parameter. If it is indicated, notifications with status updates on a specific order will be received `
-  - `amount – withdrawal amount, required parameter`
-  - `destination_account_email - email of the recipient of funds on the platform`
+- `currency - currency, required parameter`
+- `comment – a comment to withdrawal, optional parameter`
+- `callback_url - url for notifications, optional parameter. If it is indicated, notifications with status updates on a specific order will be received `
+- `amount – withdrawal amount, required parameter`
+- `destination_account_email - email of the recipient of funds on the platform`
 
 If successful, the response will contain the order_id of the created order.
  
