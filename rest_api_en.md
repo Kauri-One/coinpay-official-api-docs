@@ -16,6 +16,13 @@
   - [Getting order details](#getting-order-details)
   - [Getting order history](#getting-order-history)
   - [Callback notification](#callback-notification)
+  - [Deposit order](#deposit-order)
+    - [Operation scheme](#deposit-order-operation-scheme)
+    - [Getting settings](#getting-deposit-order-settings)
+    - [Getting replenishment address](#getting-replenishment-address)
+    - [Specific parameters](#deposit-order-specific-parameters)
+    - [Order details for callback notification](#order-details-for-callback-notification)
+    - [Getting deposit order details](#getting-deposit-order-details)
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
@@ -378,3 +385,195 @@ Order history has paging with 10 orders displayed on a page.
 ### Callback notification
 When creating an order, it is possible to specify the url for notification when the status of such order changes.
 With callback notification, a POST request is sent to the specified address. The 200th response will be a successful request processing, and if an error occurs, the system will try to send a callback 3 times with an interval of 5 minutes.
+
+## Deposit order
+### Deposit order operation scheme
+
+In order to replenish an account, one first needs to get an address for replenishment, and then transfer money to this account; it can be either a crypto-currency address or a link to pay by card. A deposit order will be created after a successful replenishment; the order will be created as a fait accompli. 
+
+#### Example of status transitions by cryptocurrencies (UAH):
+Successful replenishment (enrolment) - "NEW-> WAITING_FOR_CONFIRMATION-> CLOSED"
+
+As soon as there is a transaction in the network, the order gets the status ‘NEW’ followed by the status ‘WAITING_FOR_CONFIRMATION’, and will remain in this status until a certain number of confirmations for crediting money to the balance is reached. The order may become ‘EXPIRED’ if the required number of transaction confirmations is not reached within 24 hours.
+
+#### Example of status transitions by fiat currencies (UAH):
+Successful replenishment (enrolment) - "NEW-> CLOSED"
+
+Replenishment failed - "NEW-> ERROR"
+Link has ceased to be active "NEW> EXPIRED (CANCELLED)"
+
+### Getting deposit order settings
+```git
+GET "api / v1 / user / account_info"
+```
+There are three types of settings – ‘fees’, ‘limits’, ‘processing_rules’.
+#### Limits
+```javascript
+"deposit_order_limits": {
+    "UAH": {
+      "GATEWAY": {
+        "P2P": {
+          "max_amount": 14000,
+          "min_amount": 10
+        }
+      }
+    }
+  }
+ ``` 
+
+As of now, only fiat currencies have limits for replenishment with an indicated limit for the operation. In this example, the limit for replenishment is shown as ‘UAH’, with ‘P2P’ type of replenishment.
+
+
+#### Fee
+
+```javascript
+"deposit_order_fees": {
+	"BTC": {
+          "GATEWAY": {
+            "P2P": {
+             "payment_provider_static_fee": null,
+             "static_fee": 0,
+             "percent_fee": null
+        }
+      }
+    },
+}													
+```
+Shows fees available for a particular replenishment currency.
+
+     static_fee shows the static value that is taken within the deposit.
+     percent_fee shows the value that is taken within the deposit in percentage terms.
+     payment_provider_static_fee means the cost of the provider’s replenishment work; it is usually indicated with some value (static_fee, or percent_fee).
+    
+#### Processing rules
+
+```javascript
+"deposit_order_processing_rules": {
+	"BTC": {
+          "GATEWAY": {
+            "P2P": {
+              "is_deposit_enabled": true,
+              "confirmations_count": 2
+        }
+      }
+    },
+}													
+```
+
+Indicates whether the deposit is enabled; ‘confirmations_count’ is irrelevant for fiat currencies while for cryptocurrency it shows the number of confirmations for which the deposit is being credited.
+
+### Getting replenishment address
+
+```javascript
+POST "api/v1/deposit/address"
+```
+
+###### Parameters:
+
+```javascript
+{
+  "amount_to_spend": "string",
+  "callback_url": "string",
+  "payment_type": "string",
+  "currency": "string",
+  "amount_to_receive": "string",
+  "additional_info": {},
+  "comment": "string"
+}
+```
+
+** Parameters description: **
+
+1. `currency - currency, must be indicated (mandatory)`
+  2. `callback_url - url for notifications when creating a deposit order (optional)`
+3. `amount_to_spend, amount_to_receive - you need to specify one of these parameters. In the first case, the system will create a link for replenishment taking into account the amount a client can spend, and in the second case, the balance will be replenished by this amount (amount_to_receive). These fields are mandatory only for fiat currencies replenishment`
+4. `comment - a comment that will be indicated when creating an order at a specific address and received in callback - (optional parameter)`
+  6. `payment_type - replenishment method; if it is not specified, P2P will be taken by default`
+  7. `additional_info - a dictionary with additional parameters. customer_id is an optional parameter, client_ip is a required parameter, deposit_email or deposit_phone must be specified if one`s account status is ‘BUSINESS’
+
+###### Example of obtaining a deposit address for cryptocurrency:
+
+```javascript
+{
+  "currency": "BTC",
+  "callback_url": "http://",
+  "additional_info": {"client_ip": "1.1.1.1",
+	              "customer_id": "<some_id>"}
+}
+```
+
+###### Example of obtaining a deposit address for UAH:
+
+```javascript
+{
+  "amount_to_spend": "10", 
+  "callback_url": "http://",
+  "currency": "UAH",
+  "additional_info": {
+	"client_ip": "62.80.170.214",
+	"deposit_email": "<some_email>"
+    }
+}
+```
+
+###### Response analysis:
+
+```javascript
+{
+   "qr": "base64 img",
+   "addr": "адрес для пополнения или ссылка",
+   "status": "success"
+}
+```
+
+‘qr’ will be filled only for cryptocurrency
+
+### Deposit order specific parameters
+
+  1. `address - replenishment address`
+  2. `status - order status`
+  3. `order_id - order_id in the system using which you can get the details of an order`
+  4. `customer_id - customer`s ID`
+  5. `amount – replenishment amount`
+  6. `received_amount - the amount credited to the account`
+ 
+### Order details for callback notifications
+
+```javascript
+{"status": "CLOSED", 
+ "customer_id": "37750", 
+ "received_amount": 0.02206137, 
+ "comment": null, 
+ "address": "32ssDLdkZngu4gJ1gdmSFWp16AGmfaCnML", 
+ "order_id": "0a6282ec-f63d-4a15-a16c-a128b46eb7eb", 
+ "currency": "BTC", 
+ "tr_hash": "ffb7c8fb3acc13b1cdd924c8ae1bc953c0c81c4eedc643ad104ecfd2f0e45481", 
+ "amount": 0.02206137, 
+ "confirmations_count": 1}
+``` 
+
+### Getting deposit order details
+
+###### Example
+
+```javascript
+{
+  "external_id": "92ba1fb2-b0af-4281-89e9-21f47ae16874",
+  "order_type": "DEPOSIT",
+  "status": "CLOSED",
+  "fee": 5.15,
+  "details": {
+		"fee": 5.15,
+		"address": "https://mapi.xpay.com.ua/ru/frame/widget/e89ce23c-4d5b-4124-897a-84e75ea972c9",
+		"tr_id": "e89ce23c-4d5b-4124-897a-84e75ea972c9",
+		"comment": null
+	     },
+  "currency": "UAH",
+  "confirmations_count": null,
+  "order_sub_type": "GATEWAY",
+  "amount": 10,
+  "dt": "2020-02-04 20:11:13.860751",
+  "comment": null,
+  "tr_hash": "e89ce23c-4d5b-4124-897a-84e75ea972c9"
+}
+```
