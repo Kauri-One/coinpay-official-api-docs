@@ -39,6 +39,12 @@
     - [Repeating order](#repeating-internal-movement-order)
     - [Getting order details](#getting-internal-movement-order-details)
     - [Order details for callback notification](#internal-movement-order-details-for-callback-notification)
+  - [Invoice order(invoice)](#invoice-order) 
+    - [Operation scheme](#invoice-order-operation-scheme)
+    - [Getting settings](#getting-invoice-order-settings)
+    - [Creating invoice](#creating-invoice)
+    - [Getting details](#getting-invoice-details)
+    - [Order details for callback notification](#order-for-invoice-order-details-for-callback-notification)
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
@@ -973,3 +979,142 @@ It is required to specify order_id. You can specify the amount; it will change t
   "order_sub_type": null
   }
  ```
+ 
+## Invoice order
+### Invoice order operation scheme
+The platform allows you to create invoices for users to pay for the services.
+For example, a merchant may issue an invoice for payment of goods or services and submit it to the user.
+
+#### Invoice work stages:
+
+1) an invoice is created (a link for payment is generated)
+2) the user follows the link (logs in to coinpay.com.ua), choose in which way payment should be done and pay it
+
+
+#### Possible statuses:
+
+1) ‘NEW’ - invoice is created
+2) ‘PAYMENT_IN_PROGRESS’ - payment is being processed. Awaiting the final status
+3) ‘CLOSED’ - invoice successfully paid
+4) ‘ERROR’ – invoice payment failed
+5) ‘EXPIRED’ - invoice has ceased to exist. An invoice ceases to be active in 900 seconds
+6) ‘WAITING_FOR_CONFIRMATION’ - waiting for payment on deposit address to pay invoice via  FIAT GATEWAY or CRYPTO GATEWAY
+
+### Getting invoice order settings
+
+```javascript
+GET api/v1/user/account_info
+```
+
+#### Getting settings on whether invoice creation is active.
+
+  ```javascript
+ "invoice_order_processing_rules": {
+    "UAH": {
+      "is_enabled": true
+           },
+      }
+  ```
+
+Indicates whether invoice creation for a particular currency is enabled.
+  
+#### Getting fee settings
+
+```javascript
+"invoice_order_fees": {
+    "UAH": {
+      "percent_fee": 0
+    },
+  ```
+
+Indicates the amount of fees and how such fees will be calculated for each invoice.
+ 
+#### Getting operation limits settings
+
+```javascript
+"invoice_order_limits": {
+    "UAH": {
+      "max_amount": 148500,
+      "min_amount": 81
+    },
+  ```
+
+Indicates the amount and limits for invoice issuance.
+
+### Invoice creation
+ ```javascript
+ POST api/v1/invoice
+ ```
+ 
+ #### Parameters
+ ```javascript
+ {
+  "comment": "string" – optional parameter
+  "amount": "string" – invoice amount (required parameter)
+  "callback_url": "string" – optional parameter
+  "currency": "string" – required parameter
+  "pay_account_email":  - required parameter
+  "payment_option": restrict in which way user should pay invoice. Choices - ALL, COINPAY, FIAT, CRYPTO. Default value - ALL
+}
+```
+
+ #### Payment option choices
+ 
+ ALL - User can pay in all avialiable choices, which are present on COINPAY
+ COINPAY - User can pay only if will be logged to coinpay
+ FIAT - User can pay only from COINPAY or via FIAT GATEWAY(login to COINPAY not required)
+ CRYPTO - User can pay only from COINPAY or via CRYPTO GATEWAY(login to COINPAY not required)
+
+#### Sample response for a successfully created invoice
+```javascript
+ {
+  "url": "https://coinpay.com.ua/invoice/cf700d3b-20b4-4b33-b195-38709b7e51fa",
+  "order_id": "cf700d3b-20b4-4b33-b195-38709b7e51fa",
+  "status": "success"
+}
+```
+
+In order to pay, the user needs to follow the specified link, log in to coinpay.com.ua, choose the currency and go through the payment process.
+
+
+### Getting invoice details
+Invoice details can be seen by the account that created such invoice, and by the account that paid it.
+
+```javascript
+{
+      "internal_id": 164554,
+      "details": {
+        "comment": null,
+        "destination_account": "Svyat_merchant",
+        "source_account": null
+      },
+      "url": "https://coinpay.com.ua/invoice/cf700d3b-20b4-4b33-b195-38709b7e51fa",
+      "order_sub_type": null,
+      "dt": "None",
+      "amount": 100,
+      "status": "NEW",
+      "external_id": "cf700d3b-20b4-4b33-b195-38709b7e51fa",
+      "order_type": "INVOICE",
+      "fee": 0,
+      "currency": "UAH"
+    }
+```
+
+### Invoice order details for callback notification
+
+```javascript
+{"order_type": "INVOICE", 
+ "dt": "2020-04-07 21:54:57.185155", 
+ "url": "https://coinpay.com.ua/invoice/3542e3c2-4bab-48b8-bfbb-2b95b88c8a7a", 
+ "internal_id": 163787, 
+ "order_sub_type": null, 
+ "amount": 100.0, 
+ "status": "EXPIRED", 
+ "fee": 0.0, 
+ "currency": "UAH", 
+ "details": {
+       "destination_account": "Merchant_test", 
+       "comment": "Bot_operation_100_UAH", 
+       "source_account": <some_account>}, 
+ "external_id": "3542e3c2-4bab-48b8-bfbb-2b95b88c8a7a"}
+```
