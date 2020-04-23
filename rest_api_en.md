@@ -23,6 +23,15 @@
     - [Specific parameters](#deposit-order-specific-parameters)
     - [Order details for callback notification](#order-details-for-callback-notification)
     - [Getting deposit order details](#getting-deposit-order-details)
+  - [Withdrawal order](#withdrawal-order)
+    - [Operation scheme](#withdrawal-order-operation-scheme)
+    - [Getting settings](#getting-withdrawal-order-settings)
+    - [Creating order](#creating-withdrawal-order)
+    - [Cancelling order](#cancelling-withdrawal-order)
+    - [Repeating order](#repeating-withdrawal-order)
+    - [Specific parameters](#withdrawal-order-specific-parameters)
+    - [Getting details](#getting-withdrawal-order-details)
+    - [Order details for callback notification](#withdrawal-order-details-for-callback-notification) 
 
 ## Request Processing
 * Base api url - https://coinpay.org.ua/
