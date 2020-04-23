@@ -828,3 +828,150 @@ It is required to specify order_id. You can specify the amount; it will change t
 "amount": 0.03582889, 
 "external_id": "02241379-109d-4c49-965d-6eea8de164c7"}
 ```
+
+## Internal movement order
+### Internal movement order operation scheme
+
+This type of order involves the transfer of funds between users on the platform. For example, user A has 1000 USD; thus, knowing the recipient's email, you can instantly transfer 1000 USD.
+
+Such orders may have the following statuses:
+
+‘NEW’ – the order is being processed
+
+‘CLOSED’ - successfully closed
+
+‘ERROR’ – resulted in an error
+
+### Getting internal movement order settings
+
+```javascript
+ GET "api/v1/user/account_info"
+```
+
+##### Allows you to get to know the values of limits, fees, and whether the movement of funds is enabled:
+
+```javascript
+"internal_movement_processing_rules": {
+    "UAH": {
+      "is_repeat_enabled": true,
+      "is_enabled": true
+    },
+	...
+}
+```
+
+Indicates whether the movement of funds within the platform is enabled, whether the repetition of the operation is enabled
+
+```javascript
+"internal_movement_fees": {
+   "UAH": {
+      "static_fee": 0,
+      "percent_fee": 0
+    },
+	...
+}
+```
+
+Shows available fees.
+Fees are paid by the remitter.
+
+The following options are possible:
+
+  - `static_fee - a static value is paid when transferring funds`
+  - `percent_fee – percentage-based amount is paid`
+
+```javascript
+"internal_movement_limits": {
+  "UAH": {
+      "max_amount": 1000000,
+      "min_amount": 0
+    },
+	...
+}
+```
+
+In this case, the limits for the operation are shown. The amount of the transfer should not go beyond the specified numbers.
+
+
+### Creating internal movement order
+
+```javascript
+ POST "api/v1/internal_movement"
+```
+
+###### Parameters:
+
+```javascript
+{
+  "comment": "string",
+  "amount": "string",
+  "callback_url": "string",
+  "currency": "string",
+  "destination_account_email": "string"
+}
+```
+
+** Parameter analysis: **
+
+  - `currency - currency, required parameter`
+  - `comment – a comment to withdrawal, optional parameter`
+  - `callback_url - url for notifications, optional parameter. If it is indicated, notifications with status updates on a specific order will be received `
+  - `amount – withdrawal amount, required parameter`
+  - `destination_account_email - email of the recipient of funds on the platform`
+
+If successful, the response will contain the order_id of the created order.
+ 
+  ### Repeating internal movement order
+
+It is possible to repeat an internal movement order if repetition is enabled and such order has been processed.
+
+`` `javascript
+  POST "/ api / v1 / internal_movement / repeat"
+`` ``
+
+###### Parameters:
+
+```javascript
+{
+  "amount": 0,
+  "order_id": "string"
+}
+```
+It is required to specify order_id. You can specify the amount; it will change the amount for transfer as part of a new order.
+
+  ### Getting internal movement order details
+
+```javascript
+      "details": {
+        "comment": "",
+        "destination_account": "destination_account",
+        "source_account": "source_account"
+      },
+      "amount": 266,
+      "fee": 0,
+      "dt": "2020-03-20 22:23:52.977529",
+      "status": "CLOSED",
+      "external_id": "021b33c6-060a-4018-be71-57088ce81d2e",
+      "order_type": "INTERNAL_MOVEMENT",
+      "currency": "USDT"
+    },
+```
+
+### Internal movement order details for callback notification
+
+```javascript
+ {"details": 
+    {"destination_account": "2@gmail.com", 
+     "comment": "string", 
+     "source_account": "1@gmail.com"
+     }, 
+  "fee": 0.01, 
+  "dt": "2020-04-08 22:22:40.733016", 
+  "currency": "UAH", 
+  "order_type": "INTERNAL_MOVEMENT", 
+  "external_id": "aaf4a18f-9148-4b09-a069-2f543a1f0c70", 
+  "status": "CLOSED", 
+  "amount": 1.01, 
+  "order_sub_type": null
+  }
+ ```
