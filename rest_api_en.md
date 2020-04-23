@@ -937,7 +937,7 @@ It is possible to repeat an internal movement order if repetition is enabled and
 ```
 It is required to specify order_id. You can specify the amount; it will change the amount for transfer as part of a new order.
 
-  ### Getting internal movement order details
+### Getting internal movement order details
 
 ```javascript
       "details": {
