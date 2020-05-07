@@ -1059,10 +1059,12 @@ Indicates the amount and limits for invoice issuance.
  {
   "comment": "string" – optional parameter
   "amount": "string" – invoice amount (required parameter)
-  "callback_url": "string" – optional parameter
   "currency": "string" – required parameter
   "pay_account_email":  - required parameter
   "payment_option": restrict in which way user should pay invoice. Choices - ALL, COINPAY, FIAT, CRYPTO. Default value - ALL
+  "additional_info": optional parameter(dict). Can include "callback_url", "success_url", "fail_url". 
+  If "fail url" sets - customer will be redirected to client page with info about unsuccess payment.
+  If "success_url" sets customer will be redirected to client page with info about success payment
 }
 ```
 
